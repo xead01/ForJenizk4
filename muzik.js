@@ -4,17 +4,6 @@ let isMusicPlaying = true; // Varsayılan olarak müzik açık
 let currentTime = 0;
 let userInteracted = false; // Kullanıcı etkileşimi olup olmadığını takip et
 
-// Kullanıcı etkileşimini dinle - tüm sayfada herhangi bir yere tıklandığında
-document.addEventListener('click', function() {
-    userInteracted = true;
-    localStorage.setItem('userInteracted', 'true');
-    
-    // Eğer müzik çalmazsa, kullanıcı etkileşimi sonrası çalmayı dene
-    if (muzikPlayer && muzikPlayer.paused && isMusicPlaying) {
-        muzikPlayer.play().catch(e => console.log("Yine de çalamadı:", e));
-    }
-}, { once: true }); // once: true ile sadece bir kez tetiklenir
-
 // Sayfa yüklendiğinde çalışacak fonksiyon
 window.onload = function() {
     // Müzik durumunu localStorage'dan al (ilk ziyarette yoksa true olarak başla)
@@ -22,19 +11,35 @@ window.onload = function() {
     currentTime = parseFloat(localStorage.getItem('musicCurrentTime') || '0');
     userInteracted = localStorage.getItem('userInteracted') === 'true';
     
+    console.log("Müzik pozisyonu yüklenirken:", currentTime);
+    
     // Müzik player elementini bul
     muzikPlayer = document.getElementById('background-music');
     
     if (muzikPlayer) {
-        // Müzik pozisyonunu ayarla
-        muzikPlayer.currentTime = currentTime;
-        
-        // Kullanıcı daha önce etkileşimde bulunduysa müziği çalmayı dene
-        if (userInteracted) {
-            muzikPlayer.play().catch(error => {
-                console.log("Otomatik oynatma engellendi:", error);
-                // Uyarı gösterme - kaldırıldı
+        // Müzik pozisyonunu ayarla - mobil cihazlar için güvenilirlik artırıldı
+        try {
+            // Önce müzik dosyasının yüklendiğinden emin ol
+            muzikPlayer.addEventListener('loadedmetadata', function() {
+                console.log("Müzik metadata yüklendi, pozisyon ayarlanıyor:", currentTime);
+                // Geçerli bir pozisyon kontrolü yap
+                if (!isNaN(currentTime) && currentTime > 0 && currentTime < muzikPlayer.duration) {
+                    muzikPlayer.currentTime = currentTime;
+                    console.log("Müzik pozisyonu ayarlandı:", muzikPlayer.currentTime);
+                } else {
+                    console.log("Geçersiz müzik pozisyonu, sıfırlandı");
+                    muzikPlayer.currentTime = 0;
+                }
+                
+                // Kullanıcı daha önce etkileşimde bulunduysa müziği çalmayı dene
+                if (userInteracted) {
+                    muzikPlayer.play().catch(error => {
+                        console.log("Otomatik oynatma engellendi:", error);
+                    });
+                }
             });
+        } catch (e) {
+            console.log("Müzik pozisyonu ayarlanırken hata:", e);
         }
         
         // Müzik durumunu localStorage'a kaydet
@@ -49,12 +54,16 @@ window.onload = function() {
             localStorage.setItem('musicPlaying', 'false');
         });
         
-        // Müzik pozisyonunu periyodik olarak kaydet
+        // Müzik pozisyonunu daha sık ve güvenilir şekilde kaydet
         setInterval(function() {
             if (muzikPlayer && !muzikPlayer.paused) {
-                localStorage.setItem('musicCurrentTime', muzikPlayer.currentTime);
+                const currentPos = muzikPlayer.currentTime;
+                if (!isNaN(currentPos) && currentPos > 0) {
+                    localStorage.setItem('musicCurrentTime', currentPos);
+                    console.log("Müzik pozisyonu kaydedildi:", currentPos);
+                }
             }
-        }, 1000);
+        }, 500); // Daha sık güncelleme için 500ms
     }
     
     // Müzik kontrol butonlarını bul
@@ -73,66 +82,63 @@ window.onload = function() {
         }
     }
     
-    // Müzik kontrol butonuna tıklama olayı ekle
+    // Müzik kontrol butonuna tıklama olayı
     if (musicToggle) {
         musicToggle.addEventListener('click', toggleMusic);
     }
-    
-    // Sayfa kapatılmadan önce müzik pozisyonunu kaydet
-    window.addEventListener('beforeunload', function() {
-        if (muzikPlayer) {
-            localStorage.setItem('musicCurrentTime', muzikPlayer.currentTime);
-        }
-    });
 };
+
+// Kullanıcı etkileşimini dinle - tüm sayfada herhangi bir yere tıklandığında
+document.addEventListener('click', function() {
+    userInteracted = true;
+    localStorage.setItem('userInteracted', 'true');
+    
+    // Eğer müzik çalmazsa, kullanıcı etkileşimi sonrası çalmayı dene
+    if (muzikPlayer && muzikPlayer.paused && isMusicPlaying) {
+        muzikPlayer.play().catch(e => console.log("Yine de çalamadı:", e));
+    }
+});
+
+// Sayfa kapatılırken müzik pozisyonunu kaydet
+window.addEventListener('beforeunload', function() {
+    if (muzikPlayer && !muzikPlayer.paused) {
+        localStorage.setItem('musicCurrentTime', muzikPlayer.currentTime);
+        console.log("Sayfa kapatılırken müzik pozisyonu kaydedildi:", muzikPlayer.currentTime);
+    }
+});
 
 // Müziği aç/kapat fonksiyonu
 function toggleMusic() {
-    // Müzik player elementini kontrol et
-    if (!muzikPlayer) {
-        muzikPlayer = document.getElementById('background-music');
-    }
-    
-    // Müzik kontrol butonlarını bul
-    const musicOn = document.getElementById('music-on');
-    const musicOff = document.getElementById('music-off');
-    
-    // Müzik durumunu değiştir
-    isMusicPlaying = !isMusicPlaying;
-    
-    // Müzik durumunu localStorage'a kaydet
-    localStorage.setItem('isMusicPlaying', isMusicPlaying);
-    
-    // Müzik durumuna göre işlem yap
-    if (isMusicPlaying) {
-        // Müziği başlat
-        if (muzikPlayer) {
-            const playPromise = muzikPlayer.play();
+    if (muzikPlayer) {
+        if (muzikPlayer.paused) {
+            // Müziği çal
+            muzikPlayer.play();
+            isMusicPlaying = true;
             
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("Müzik başlatma hatası:", error);
-                });
+            // Buton görünümünü güncelle
+            const musicOn = document.getElementById('music-on');
+            const musicOff = document.getElementById('music-off');
+            
+            if (musicOn && musicOff) {
+                musicOn.style.display = 'block';
+                musicOff.style.display = 'none';
+            }
+        } else {
+            // Müziği durdur
+            muzikPlayer.pause();
+            isMusicPlaying = false;
+            
+            // Buton görünümünü güncelle
+            const musicOn = document.getElementById('music-on');
+            const musicOff = document.getElementById('music-off');
+            
+            if (musicOn && musicOff) {
+                musicOn.style.display = 'none';
+                musicOff.style.display = 'block';
             }
         }
         
-        // Buton görünümünü ayarla
-        if (musicOn && musicOff) {
-            musicOn.style.display = 'block';
-            musicOff.style.display = 'none';
-        }
-    } else {
-        // Müziği durdur
-        if (muzikPlayer) {
-            muzikPlayer.pause();
-            // Müzik pozisyonunu kaydet
-            localStorage.setItem('musicCurrentTime', muzikPlayer.currentTime);
-        }
-        
-        // Buton görünümünü ayarla
-        if (musicOn && musicOff) {
-            musicOn.style.display = 'none';
-            musicOff.style.display = 'block';
-        }
+        // Müzik durumunu localStorage'a kaydet
+        localStorage.setItem('isMusicPlaying', isMusicPlaying);
     }
 }
