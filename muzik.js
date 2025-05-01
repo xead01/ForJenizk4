@@ -1,12 +1,12 @@
 // Müzik kontrolü için global değişkenler
 let muzikPlayer = null;
-let isMusicPlaying = false;
+let isMusicPlaying = true; // Varsayılan olarak müzik açık
 let currentTime = 0;
 
 // Sayfa yüklendiğinde çalışacak fonksiyon
 window.onload = function() {
-    // Müzik durumunu localStorage'dan al
-    isMusicPlaying = localStorage.getItem('isMusicPlaying') === 'true';
+    // Müzik durumunu localStorage'dan al (ilk ziyarette yoksa true olarak başla)
+    isMusicPlaying = localStorage.getItem('isMusicPlaying') === null ? true : localStorage.getItem('isMusicPlaying') === 'true';
     currentTime = parseFloat(localStorage.getItem('musicCurrentTime') || '0');
     
     // Müzik player elementini bul
@@ -16,16 +16,19 @@ window.onload = function() {
         // Müzik pozisyonunu ayarla
         muzikPlayer.currentTime = currentTime;
         
-        // Müzik durumunu kontrol et ve ayarla
-        if (isMusicPlaying) {
-            const playPromise = muzikPlayer.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("Otomatik oynatma engellendi:", error);
-                });
-            }
+        // Sayfa yüklendiğinde müziği otomatik başlat
+        const playPromise = muzikPlayer.play();
+        
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log("Otomatik oynatma engellendi:", error);
+                // Kullanıcı etkileşimi gerektiğini bildir
+                alert("Müziği başlatmak için sayfaya tıklayın");
+            });
         }
+        
+        // Müzik durumunu localStorage'a kaydet
+        localStorage.setItem('isMusicPlaying', 'true');
         
         // Müzik pozisyonunu periyodik olarak kaydet
         setInterval(function() {

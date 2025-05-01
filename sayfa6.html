@@ -159,6 +159,58 @@
                 text-shadow: 0 0 15px rgba(231, 84, 128, 0.7);
             }
         }
+        
+        /* Mobil cihazlar için teklif sayfası düzenlemeleri */
+        @media (max-width: 768px) {
+            .letter {
+                font-size: 0.95rem;
+                line-height: 1.5;
+                padding: 15px;
+            }
+            
+            .proposal {
+                font-size: 1.8rem;
+                margin: 30px 0 20px;
+                padding: 0 5px;
+            }
+            
+            .signature {
+                font-size: 1.5rem;
+                margin-top: 20px;
+                padding-right: 10px;
+            }
+            
+            .buttons {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                gap: 30px;
+            }
+            
+            .btn {
+                min-width: 90px;
+                padding: 8px 15px;
+            }
+        }
+        
+        /* Çok küçük ekranlar için ek düzenlemeler */
+        @media (max-width: 480px) {
+            .letter {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+            
+            .proposal {
+                font-size: 1.6rem;
+            }
+            
+            .signature {
+                font-size: 1.4rem;
+            }
+            
+            .buttons {
+                gap: 20px;
+            }
+        }
     </style>
 </head>
 <body class="allow-scroll">
