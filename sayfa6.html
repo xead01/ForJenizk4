@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="tr" style="overflow-y: scroll;">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sana Özel</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="muzik.js"></script>
+    <style>
+        .final-message {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .heart-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .custom-heart {
+            background-color: #e75480;
+            display: inline-block;
+            height: 25px;
+            margin: 0 8px;
+            position: relative;
+            top: 0;
+            transform: rotate(-45deg);
+            width: 25px;
+            animation: customHeartbeat 1.5s infinite;
+        }
+
+        .custom-heart:before,
+        .custom-heart:after {
+            content: "";
+            background-color: #e75480;
+            border-radius: 50%;
+            height: 25px;
+            position: absolute;
+            width: 25px;
+        }
+
+        .custom-heart:before {
+            top: -12.5px;
+            left: 0;
+        }
+
+        .custom-heart:after {
+            left: 12.5px;
+            top: 0;
+        }
+        
+        .special-message {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            color: #e75480;
+            margin: 30px 0;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .letter {
+            font-family: 'Montserrat', sans-serif;
+            line-height: 1.6;
+            margin: 30px 0;
+            white-space: pre-line;
+            text-align: left;
+            font-size: 0.85rem;
+            padding: 0 20px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+        }
+        
+        .signature {
+            font-family: 'Dancing Script', cursive;
+            font-size: 1.8rem;
+            color: #e75480;
+            text-align: right;
+            margin-top: 30px;
+            padding-right: 20px;
+        }
+        
+        .proposal {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.2rem;
+            color: #e75480;
+            text-align: center;
+            margin: 40px 0 25px;
+            animation: glow 1.5s ease-in-out infinite alternate;
+            text-shadow: 0 0 5px rgba(231, 84, 128, 0.3);
+            padding: 0 10px;
+            word-wrap: break-word;
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            position: relative;
+            min-height: 30px;
+            margin-top: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            min-width: 100px;
+            width: auto;
+            text-align: center;
+            padding: 10px 20px;
+            position: relative;
+            font-size: 0.95rem;
+            border-radius: 25px;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .btn-yes {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+            z-index: 2;
+        }
+        
+        .btn-yes:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.5);
+        }
+        
+        .btn-no {
+            background: linear-gradient(135deg, #f44336 0%, #e53935 100%);
+            box-shadow: 0 3px 10px rgba(244, 67, 54, 0.3);
+            transition: all 0.2s ease;
+            z-index: 1;
+        }
+        
+        .btn-no:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.5);
+        }
+        
+        @keyframes customHeartbeat {
+            0% { transform: rotate(-45deg) scale(1); }
+            25% { transform: rotate(-45deg) scale(1.1); }
+            50% { transform: rotate(-45deg) scale(1); }
+            75% { transform: rotate(-45deg) scale(1.1); }
+        }
+        
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px rgba(231, 84, 128, 0.3);
+            }
+            to {
+                text-shadow: 0 0 15px rgba(231, 84, 128, 0.7);
+            }
+        }
+        
+        /* Mobil cihazlar için teklif sayfası düzenlemeleri */
+        @media (max-width: 768px) {
+            .letter {
+                font-size: 0.95rem;
+                line-height: 1.5;
+                padding: 15px;
+            }
+            
+            .proposal {
+                font-size: 1.8rem;
+                margin: 30px 0 20px;
+                padding: 0 5px;
+            }
+            
+            .signature {
+                font-size: 1.5rem;
+                margin-top: 20px;
+                padding-right: 10px;
+            }
+            
+            .buttons {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                gap: 30px;
+            }
+            
+            .btn {
+                min-width: 90px;
+                padding: 8px 15px;
+            }
+        }
+        
+        /* Çok küçük ekranlar için ek düzenlemeler */
+        @media (max-width: 480px) {
+            .letter {
+                font-size: 0.9rem;
+                padding: 10px;
+            }
+            
+            .proposal {
+                font-size: 1.6rem;
+            }
+            
+            .signature {
+                font-size: 1.4rem;
+            }
+            
+            .buttons {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body class="allow-scroll">
+    <!-- Ördek animasyonu -->
+    <div class="duck"></div>
+    <div class="duck"></div>
+    <div class="duck"></div>
+    <div class="duck"></div>
+    <div class="duck"></div>
+    
+    <div class="container">
+        <div class="card">
+            <div class="heart-container">
+                <div class="custom-heart"></div>
+                <div class="custom-heart"></div>
+                <div class="custom-heart"></div>
+            </div>
+            
+            <div class="special-message">
+                Son Sözlerim
+            </div>
+            
+            <div class="letter">Deniz,
+
+Sana bu satırları yazarken içimden hiçbir hesap, hiçbir oyun geçmiyor.
+Sadece içimde kalanları, biriktirdiklerimi sana son bir kez söylemek istiyorum.
+
+Beni ilk sevdiğin zamanları hatırlıyorum.
+Yüzüme bakışını, sarılırken kalbimi hissedişini…
+O anlarda dünya sadece senin sesinden ibaretti benim için.
+Ve itiraf edeyim, belki de seni kaybetme korkusuyla bazı duygularımı içime bastım.
+Çok seviyordum ama fazla söylersem yine canım yanar sanıyordum.
+Bu yüzden "ne kadar seviyorsun?" dediğinde kaçamak cevaplar verdim…
+Ama bil ki, içim içimi yiyordu, sadece yeterince güçlü olduğumu göstermek istedim.
+
+Birlikte geçirdiğimiz onca güzel anı…
+Uykular, kahkahalar, saçma oyunlarımız, sarılmalarımız…
+Bunların hepsi benim için hayatımdaki en gerçek, en saf şeylerdi.
+Ve ben bunları özlüyorum.
+Sadece seni değil, seninle olduğum hâlimi de özlüyorum.
+
+Biliyorum, şu an kafan karışık. 
+Ama bilmeni isterim ki, ben senin yanında sadece bir sevgili değil,
+sığınabileceğin bir liman, susunca anlayan bir dost olmak istedim.
+Becerebildim mi bilmem, ama niyetim hep buydu.
+
+Geri dönmek istersen, seni anlayacak biri hâlâ bu satırları yazıyor olacak.</div>
+            
+            <div class="signature">— Şahan</div>
+            
+            <div class="proposal">Yeniden sevgilim olmak ister misin?</div>
+            
+            <div class="buttons">
+                <a href="sayfa7.html" class="btn btn-yes">Evet</a>
+                <a href="javascript:void(0)" class="btn btn-no" id="noButton">Hayır</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Arka plan müziği -->
+    <audio id="background-music" loop>
+        <source src="muzik/arkaplan-muzik.mp3" type="audio/mpeg">
+        Tarayıcınız audio elementini desteklemiyor.
+    </audio>
+    
+    <!-- Müzik kontrol butonu -->
+    <div class="music-controls" id="music-toggle">
+        <svg class="music-icon" id="music-on" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18V6L21 3V15" stroke="#e75480" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 21C7.65685 21 9 19.6569 9 18C9 16.3431 7.65685 15 6 15C4.34315 15 3 16.3431 3 18C3 19.6569 4.34315 21 6 21Z" stroke="#e75480" stroke-width="2"/>
+            <path d="M18 18C19.6569 18 21 16.6569 21 15C21 13.3431 19.6569 12 18 12C16.3431 12 15 13.3431 15 15C15 16.6569 16.3431 18 18 18Z" stroke="#e75480" stroke-width="2"/>
+        </svg>
+        <svg class="music-icon" id="music-off" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <path d="M9 18V6L21 3V15" stroke="#e75480" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 21C7.65685 21 9 19.6569 9 18C9 16.3431 7.65685 15 6 15C4.34315 15 3 16.3431 3 18C3 19.6569 4.34315 21 6 21Z" stroke="#e75480" stroke-width="2"/>
+            <path d="M18 18C19.6569 18 21 16.6569 21 15C21 13.3431 19.6569 12 18 12C16.3431 12 15 13.3431 15 15C15 16.6569 16.3431 18 18 18Z" stroke="#e75480" stroke-width="2"/>
+            <path d="M2 2L22 22" stroke="#e75480" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </div>
+    
+    <div class="hearts">
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+    </div>
+
+    <script>
+        // Hayır butonunun kaçma efekti - basitleştirilmiş versiyon
+        document.addEventListener('DOMContentLoaded', function() {
+            const noButton = document.getElementById('noButton');
+            const container = document.querySelector('.buttons');
+            
+            // Butonun kaçma fonksiyonu
+            function moveButton() {
+                // Butonun başlangıç stilini ayarla (ilk hover'da)
+                if (noButton.style.position !== 'absolute') {
+                    noButton.style.position = 'absolute';
+                }
+                
+                // Container boyutları
+                const containerRect = container.getBoundingClientRect();
+                const buttonWidth = noButton.offsetWidth;
+                const buttonHeight = noButton.offsetHeight;
+                
+                // Güvenli sınırlar (container içinde)
+                const maxX = containerRect.width - buttonWidth;
+                const maxY = 60; // Dikey hareket sınırı
+                
+                // Rastgele pozisyon hesapla
+                let newX = Math.floor(Math.random() * maxX);
+                let newY = Math.floor(Math.random() * maxY) - 20; // -20 ile 40 arası
+                
+                // Butonun yeni pozisyonunu ayarla
+                noButton.style.left = newX + 'px';
+                noButton.style.top = newY + 'px';
+            }
+            
+            // Mouse over olayı
+            noButton.addEventListener('mouseover', moveButton);
+            
+            // Mobil için dokunma olayı
+            noButton.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                moveButton();
+            });
+            
+            // Sayfa yüklendiğinde "Hayır" butonunun başlangıç pozisyonunu ayarla
+            window.addEventListener('load', function() {
+                // "Hayır" butonunun başlangıç pozisyonunu korumak için
+                // Butonun doğal akışta olmasını sağla
+                noButton.style.position = 'static';
+            });
+        });
+    </script>
+</body>
+</html>
