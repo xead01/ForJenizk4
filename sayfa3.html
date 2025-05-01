@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="tr" class="no-scroll">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sana Özel</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="muzik.js"></script>
+    <script>
+        // Sayfa yüklendiğinde çalışacak fonksiyon
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobil cihaz kontrolü
+            const isMobile = window.innerWidth <= 768;
+            
+            // Her satır için kaç resim kullanacağımızı belirleyelim
+            // Mobil cihazlarda daha az resim gösterelim
+            const imagesPerRow = isMobile ? 5 : 10;
+            
+            // İlk satır için resimleri oluştur
+            createImagesForRow('row1', 1, imagesPerRow);
+            
+            // İkinci satır için resimleri oluştur
+            createImagesForRow('row2', imagesPerRow + 1, imagesPerRow * 2);
+            
+            // Üçüncü satır için resimleri oluştur
+            createImagesForRow('row3', imagesPerRow * 2 + 1, imagesPerRow * 3);
+            
+            // Belirli bir satır için resimleri oluşturan fonksiyon
+            function createImagesForRow(rowClass, startIndex, endIndex) {
+                const row = document.querySelector('.' + rowClass);
+                row.innerHTML = ''; // Mevcut resimleri temizle
+                
+                // İlk set resimleri ekle
+                for (let i = startIndex; i <= endIndex; i++) {
+                    const img = document.createElement('div');
+                    img.className = 'gallery-image';
+                    img.style.backgroundImage = `url('resimler/resim${i}.jpg')`;
+                    row.appendChild(img);
+                }
+                
+                // Döngü için ilk resimleri tekrar ekle (smooth scrolling için)
+                // Mobil cihazlarda daha az tekrar resim ekleyelim
+                const repeatCount = isMobile ? 2 : 4;
+                for (let i = startIndex; i <= startIndex + repeatCount; i++) {
+                    const img = document.createElement('div');
+                    img.className = 'gallery-image';
+                    img.style.backgroundImage = `url('resimler/resim${i}.jpg')`;
+                    row.appendChild(img);
+                }
+            }
+            
+            // Ekran boyutu değiştiğinde resimleri yeniden oluştur
+            window.addEventListener('resize', function() {
+                const newIsMobile = window.innerWidth <= 768;
+                // Sadece mobil/masaüstü durumu değiştiğinde güncelle
+                if (newIsMobile !== isMobile) {
+                    location.reload(); // Sayfayı yenile
+                }
+            });
+        });
+    </script>
+</head>
+<body class="no-scroll">
+    <!-- Ördek animasyonu -->
+    <div class="duck"></div>
+    <div class="duck"></div>
+    <div class="duck"></div>
+    <div class="duck"></div>
+    <div class="duck"></div>
+    
+    <!-- Arka plan müziği -->
+    <audio id="background-music" loop>
+        <source src="muzik/arkaplan-muzik.mp3" type="audio/mpeg">
+        Tarayıcınız audio elementini desteklemiyor.
+    </audio>
+    
+    <div class="image-gallery">
+        <!-- Satırlar JavaScript ile doldurulacak -->
+        <div class="gallery-row row1"></div>
+        <div class="gallery-row row2"></div>
+        <div class="gallery-row row3"></div>
+    </div>
+    
+    <div class="container">
+        <div class="card">
+            <h1>Anılarımız</h1>
+            <p class="message">
+                Belki de en çok özlediğim şey, seninle paylaştığım o küçük anlar. 
+                Bir kahve içerken, bir film izlerken, sadece yan yana otururken bile hissettiğim o huzur...
+            </p>
+            <p class="message">
+                Sana bu sayfayı hazırlarken, içimde hala sana karşı taşıdığım tüm güzel duyguları hatırladım. 
+                Hayat bazen bizi beklenmedik yollara sürüklese de, kalbimizde taşıdığımız anılar hep bizimle kalır.
+            </p>
+            <p class="message special">
+                Seni her zaman özel bir yerde saklayacağım.
+            </p>
+            <div class="buttons">
+                <a href="sayfa4.html" class="btn">Devam Et</a>
+                <a href="sayfa2.html" class="btn btn-secondary">Geri Dön</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Müzik kontrol butonu -->
+    <div class="music-controls" id="music-toggle">
+        <svg class="music-icon" id="music-on" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18V6L21 3V15" stroke="#e75480" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 21C7.65685 21 9 19.6569 9 18C9 16.3431 7.65685 15 6 15C4.34315 15 3 16.3431 3 18C3 19.6569 4.34315 21 6 21Z" stroke="#e75480" stroke-width="2"/>
+            <path d="M18 18C19.6569 18 21 16.6569 21 15C21 13.3431 19.6569 12 18 12C16.3431 12 15 13.3431 15 15C15 16.6569 16.3431 18 18 18Z" stroke="#e75480" stroke-width="2"/>
+        </svg>
+        <svg class="music-icon" id="music-off" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+            <path d="M9 18V6L21 3V15" stroke="#e75480" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M6 21C7.65685 21 9 19.6569 9 18C9 16.3431 7.65685 15 6 15C4.34315 15 3 16.3431 3 18C3 19.6569 4.34315 21 6 21Z" stroke="#e75480" stroke-width="2"/>
+            <path d="M18 18C19.6569 18 21 16.6569 21 15C21 13.3431 19.6569 12 18 12C16.3431 12 15 13.3431 15 15C15 16.6569 16.3431 18 18 18Z" stroke="#e75480" stroke-width="2"/>
+            <path d="M2 2L22 22" stroke="#e75480" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+    </div>
+    
+    <div class="hearts">
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+        <div class="heart"></div>
+    </div>
+</body>
+</html>
