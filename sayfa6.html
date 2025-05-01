@@ -271,7 +271,7 @@ Geri dönmek istersen, seni anlayacak biri hâlâ bu satırları yazıyor olacak
     </div>
     
     <!-- Arka plan müziği -->
-    <audio id="background-music" loop>
+    <audio id="background-music" preload="auto" loop>
         <source src="muzik/arkaplan-muzik.mp3" type="audio/mpeg">
         Tarayıcınız audio elementini desteklemiyor.
     </audio>
@@ -345,6 +345,29 @@ Geri dönmek istersen, seni anlayacak biri hâlâ bu satırları yazıyor olacak
                 // Butonun doğal akışta olmasını sağla
                 noButton.style.position = 'static';
             });
+        });
+    </script>
+    
+    <script>
+        // Sayfa yüklendiğinde müzik pozisyonunu ayarla
+        document.addEventListener('DOMContentLoaded', function() {
+            // Son bilinen müzik pozisyonunu al
+            const lastPosition = parseFloat(localStorage.getItem('lastMusicPosition') || '0');
+            
+            if (lastPosition > 0) {
+                const audio = document.getElementById('background-music');
+                if (audio) {
+                    // Müzik yüklendiğinde pozisyonu ayarla
+                    audio.addEventListener('loadedmetadata', function() {
+                        try {
+                            audio.currentTime = lastPosition;
+                            console.log("Son müzik pozisyonu ayarlandı:", lastPosition);
+                        } catch (e) {
+                            console.log("Müzik pozisyonu ayarlama hatası:", e);
+                        }
+                    });
+                }
+            }
         });
     </script>
 </body>

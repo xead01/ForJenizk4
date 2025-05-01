@@ -3,44 +3,45 @@ let muzikPlayer = null;
 let isMusicPlaying = true; // Varsayılan olarak müzik açık
 let currentTime = 0;
 let userInteracted = false; // Kullanıcı etkileşimi olup olmadığını takip et
+let positionInterval = null; // Pozisyon kaydetme için interval
+let lastKnownPosition = 0; // Son bilinen müzik pozisyonu
 
 // Sayfa yüklendiğinde çalışacak fonksiyon
 window.onload = function() {
+    console.log("Sayfa yüklendi, müzik ayarlanıyor...");
+    
     // Müzik durumunu localStorage'dan al (ilk ziyarette yoksa true olarak başla)
     isMusicPlaying = localStorage.getItem('isMusicPlaying') === null ? true : localStorage.getItem('isMusicPlaying') === 'true';
-    currentTime = parseFloat(localStorage.getItem('musicCurrentTime') || '0');
     userInteracted = localStorage.getItem('userInteracted') === 'true';
     
-    console.log("Müzik pozisyonu yüklenirken:", currentTime);
+    // Son bilinen müzik pozisyonunu al
+    lastKnownPosition = parseFloat(localStorage.getItem('lastMusicPosition') || '0');
+    
+    console.log("Son bilinen müzik pozisyonu:", lastKnownPosition);
     
     // Müzik player elementini bul
     muzikPlayer = document.getElementById('background-music');
     
     if (muzikPlayer) {
-        // Müzik pozisyonunu ayarla - mobil cihazlar için güvenilirlik artırıldı
-        try {
-            // Önce müzik dosyasının yüklendiğinden emin ol
-            muzikPlayer.addEventListener('loadedmetadata', function() {
-                console.log("Müzik metadata yüklendi, pozisyon ayarlanıyor:", currentTime);
-                // Geçerli bir pozisyon kontrolü yap
-                if (!isNaN(currentTime) && currentTime > 0 && currentTime < muzikPlayer.duration) {
-                    muzikPlayer.currentTime = currentTime;
-                    console.log("Müzik pozisyonu ayarlandı:", muzikPlayer.currentTime);
-                } else {
-                    console.log("Geçersiz müzik pozisyonu, sıfırlandı");
-                    muzikPlayer.currentTime = 0;
+        // Müzik yüklendiğinde pozisyonu ayarla
+        muzikPlayer.addEventListener('loadedmetadata', function() {
+            try {
+                // Son bilinen pozisyonu ayarla
+                if (!isNaN(lastKnownPosition) && lastKnownPosition > 0 && lastKnownPosition < muzikPlayer.duration) {
+                    muzikPlayer.currentTime = lastKnownPosition;
+                    console.log("Müzik pozisyonu ayarlandı:", lastKnownPosition);
                 }
                 
                 // Kullanıcı daha önce etkileşimde bulunduysa müziği çalmayı dene
-                if (userInteracted) {
+                if (userInteracted && isMusicPlaying) {
                     muzikPlayer.play().catch(error => {
                         console.log("Otomatik oynatma engellendi:", error);
                     });
                 }
-            });
-        } catch (e) {
-            console.log("Müzik pozisyonu ayarlanırken hata:", e);
-        }
+            } catch (e) {
+                console.log("Müzik pozisyonu ayarlama hatası:", e);
+            }
+        });
         
         // Müzik durumunu localStorage'a kaydet
         localStorage.setItem('isMusicPlaying', 'true');
@@ -48,22 +49,34 @@ window.onload = function() {
         // Müzik çalıyor mu durumunu kontrol et ve kaydet
         muzikPlayer.addEventListener('play', function() {
             localStorage.setItem('musicPlaying', 'true');
+            console.log("Müzik çalmaya başladı, pozisyon:", muzikPlayer.currentTime);
+            
+            // Müzik çalmaya başladığında pozisyon kaydetmeyi başlat
+            if (positionInterval) clearInterval(positionInterval);
+            positionInterval = setInterval(saveMusicPosition, 500);
         });
         
         muzikPlayer.addEventListener('pause', function() {
             localStorage.setItem('musicPlaying', 'false');
+            console.log("Müzik duraklatıldı, pozisyon:", muzikPlayer.currentTime);
+            
+            // Müzik durduğunda pozisyon kaydetmeyi durdur
+            if (positionInterval) clearInterval(positionInterval);
+            
+            // Son pozisyonu kaydet
+            saveMusicPosition();
         });
         
-        // Müzik pozisyonunu daha sık ve güvenilir şekilde kaydet
-        setInterval(function() {
-            if (muzikPlayer && !muzikPlayer.paused) {
-                const currentPos = muzikPlayer.currentTime;
-                if (!isNaN(currentPos) && currentPos > 0) {
-                    localStorage.setItem('musicCurrentTime', currentPos);
-                    console.log("Müzik pozisyonu kaydedildi:", currentPos);
-                }
-            }
-        }, 500); // Daha sık güncelleme için 500ms
+        // Müzik bittiğinde
+        muzikPlayer.addEventListener('ended', function() {
+            console.log("Müzik bitti");
+            
+            // Müzik bittiğinde pozisyon kaydetmeyi durdur
+            if (positionInterval) clearInterval(positionInterval);
+            
+            // Pozisyonu sıfırla
+            localStorage.setItem('lastMusicPosition', '0');
+        });
     }
     
     // Müzik kontrol butonlarını bul
@@ -88,6 +101,18 @@ window.onload = function() {
     }
 };
 
+// Müzik pozisyonunu kaydet
+function saveMusicPosition() {
+    if (muzikPlayer && !muzikPlayer.paused) {
+        const currentPos = muzikPlayer.currentTime;
+        if (!isNaN(currentPos) && currentPos > 0) {
+            // Son bilinen pozisyonu kaydet
+            localStorage.setItem('lastMusicPosition', currentPos);
+            console.log("Son müzik pozisyonu kaydedildi:", currentPos);
+        }
+    }
+}
+
 // Kullanıcı etkileşimini dinle - tüm sayfada herhangi bir yere tıklandığında
 document.addEventListener('click', function() {
     userInteracted = true;
@@ -102,8 +127,9 @@ document.addEventListener('click', function() {
 // Sayfa kapatılırken müzik pozisyonunu kaydet
 window.addEventListener('beforeunload', function() {
     if (muzikPlayer && !muzikPlayer.paused) {
-        localStorage.setItem('musicCurrentTime', muzikPlayer.currentTime);
-        console.log("Sayfa kapatılırken müzik pozisyonu kaydedildi:", muzikPlayer.currentTime);
+        // Son bilinen pozisyonu kaydet
+        localStorage.setItem('lastMusicPosition', muzikPlayer.currentTime);
+        console.log("Sayfa kapatılırken son müzik pozisyonu kaydedildi:", muzikPlayer.currentTime);
     }
 });
 

@@ -44,7 +44,7 @@
     </div>
     
     <!-- Arka plan müziği -->
-    <audio id="background-music" loop>
+    <audio id="background-music" preload="auto" loop>
         <source src="muzik/arkaplan-muzik.mp3" type="audio/mpeg">
         Tarayıcınız audio elementini desteklemiyor.
     </audio>
@@ -63,5 +63,27 @@
             <path d="M2 2L22 22" stroke="#e75480" stroke-width="2" stroke-linecap="round"/>
         </svg>
     </div>
+    <script>
+        // Sayfa yüklendiğinde müzik pozisyonunu ayarla
+        document.addEventListener('DOMContentLoaded', function() {
+            // Son bilinen müzik pozisyonunu al
+            const lastPosition = parseFloat(localStorage.getItem('lastMusicPosition') || '0');
+            
+            if (lastPosition > 0) {
+                const audio = document.getElementById('background-music');
+                if (audio) {
+                    // Müzik yüklendiğinde pozisyonu ayarla
+                    audio.addEventListener('loadedmetadata', function() {
+                        try {
+                            audio.currentTime = lastPosition;
+                            console.log("Son müzik pozisyonu ayarlandı:", lastPosition);
+                        } catch (e) {
+                            console.log("Müzik pozisyonu ayarlama hatası:", e);
+                        }
+                    });
+                }
+            }
+        });
+    </script>
 </body>
 </html>
