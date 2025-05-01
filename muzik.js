@@ -4,9 +4,11 @@ let isMusicPlaying = true; // Varsayılan olarak müzik açık
 let currentTime = 0;
 let userInteracted = false; // Kullanıcı etkileşimi olup olmadığını takip et
 
-// Kullanıcı etkileşimini dinle
+// Kullanıcı etkileşimini dinle - tüm sayfada herhangi bir yere tıklandığında
 document.addEventListener('click', function() {
     userInteracted = true;
+    localStorage.setItem('userInteracted', 'true');
+    
     // Eğer müzik çalmazsa, kullanıcı etkileşimi sonrası çalmayı dene
     if (muzikPlayer && muzikPlayer.paused && isMusicPlaying) {
         muzikPlayer.play().catch(e => console.log("Yine de çalamadı:", e));
@@ -27,20 +29,12 @@ window.onload = function() {
         // Müzik pozisyonunu ayarla
         muzikPlayer.currentTime = currentTime;
         
-        // Eğer kullanıcı daha önce etkileşimde bulunduysa veya müzik çalıyorsa
-        if (userInteracted || localStorage.getItem('musicPlaying') === 'true') {
-            const playPromise = muzikPlayer.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.catch(error => {
-                    console.log("Otomatik oynatma engellendi:", error);
-                    // Sadece ilk sayfada ve kullanıcı etkileşimi olmadıysa uyarı göster
-                    if (!userInteracted && !localStorage.getItem('alertShown')) {
-                        alert("Müziği başlatmak için sayfaya tıklayın");
-                        localStorage.setItem('alertShown', 'true');
-                    }
-                });
-            }
+        // Kullanıcı daha önce etkileşimde bulunduysa müziği çalmayı dene
+        if (userInteracted) {
+            muzikPlayer.play().catch(error => {
+                console.log("Otomatik oynatma engellendi:", error);
+                // Uyarı gösterme - kaldırıldı
+            });
         }
         
         // Müzik durumunu localStorage'a kaydet
@@ -59,7 +53,6 @@ window.onload = function() {
         setInterval(function() {
             if (muzikPlayer && !muzikPlayer.paused) {
                 localStorage.setItem('musicCurrentTime', muzikPlayer.currentTime);
-                localStorage.setItem('userInteracted', 'true');
             }
         }, 1000);
     }
