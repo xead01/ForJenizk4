@@ -14,11 +14,13 @@
             width: 100%;
             max-width: 800px;
             margin: 0 auto;
+            overflow: hidden; /* Taşma sorununu önlemek için */
         }
         
         .question-container {
             display: none;
             animation: fadeIn 0.5s ease;
+            max-width: 100%; /* Maksimum genişliği sınırla */
         }
         
         .question-container.active {
@@ -36,6 +38,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-top: 20px;
+            max-width: 100%; /* Maksimum genişliği sınırla */
         }
         
         .option {
@@ -49,6 +52,7 @@
             aspect-ratio: 1/1;
             display: flex;
             flex-direction: column;
+            max-width: 100%; /* Maksimum genişliği sınırla */
         }
         
         .option:hover {
@@ -172,6 +176,59 @@
             .option-label {
                 font-size: 0.7rem;
                 padding: 4px;
+            }
+        }
+        
+        /* Masaüstü için ek düzenlemeler */
+        @media (min-width: 769px) {
+            .container {
+                max-width: 90%;
+                padding: 20px;
+                overflow: hidden;
+                margin: 0 auto; /* Ortalama için */
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }
+            
+            .card {
+                max-width: 900px;
+                overflow: hidden;
+                padding: 30px;
+                margin: 0 auto; /* Ortalama için */
+                width: 100%;
+            }
+            
+            .quiz-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                width: 100%;
+            }
+            
+            .question-container {
+                width: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .options {
+                max-width: 700px;
+                margin-left: auto;
+                margin-right: auto;
+                width: 100%;
+            }
+            
+            .option {
+                max-height: 300px;
+            }
+            
+            .question-title {
+                text-align: center;
             }
         }
     </style>
