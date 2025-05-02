@@ -17,6 +17,16 @@ window.onload = function() {
     // Son bilinen müzik pozisyonunu al
     lastKnownPosition = parseFloat(localStorage.getItem('lastMusicPosition') || '0');
     
+    // URL'den müzik pozisyonunu kontrol et (mobil için yedek yöntem)
+    const urlParams = new URLSearchParams(window.location.search);
+    const urlPosition = parseFloat(urlParams.get('muzikPos') || '0');
+    
+    // Eğer URL'de pozisyon varsa, localStorage'dan alınan pozisyonu geçersiz kıl
+    if (urlPosition > 0) {
+        lastKnownPosition = urlPosition;
+        console.log("URL'den müzik pozisyonu alındı:", lastKnownPosition);
+    }
+    
     console.log("Son bilinen müzik pozisyonu:", lastKnownPosition);
     
     // Müzik player elementini bul
@@ -128,10 +138,38 @@ document.addEventListener('click', function() {
 window.addEventListener('beforeunload', function() {
     if (muzikPlayer && !muzikPlayer.paused) {
         // Son bilinen pozisyonu kaydet
-        localStorage.setItem('lastMusicPosition', muzikPlayer.currentTime);
-        console.log("Sayfa kapatılırken son müzik pozisyonu kaydedildi:", muzikPlayer.currentTime);
+        const currentPos = muzikPlayer.currentTime;
+        localStorage.setItem('lastMusicPosition', currentPos);
+        console.log("Sayfa kapatılırken son müzik pozisyonu kaydedildi:", currentPos);
+        
+        // Mobil tarayıcılar için URL parametresi ile pozisyonu aktarmak için
+        // Tüm sayfaların linklerine müzik pozisyonunu ekle
+        addMusicPositionToLinks(currentPos);
     }
 });
+
+// Tüm sayfa linklerine müzik pozisyonunu ekle
+function addMusicPositionToLinks(position) {
+    if (isNaN(position) || position <= 0) return;
+    
+    // Sayfadaki tüm linkleri bul
+    const links = document.querySelectorAll('a');
+    
+    // Her linke müzik pozisyonunu ekle
+    links.forEach(link => {
+        // Eğer link aynı domain içindeyse
+        if (link.href && link.hostname === window.location.hostname) {
+            // Mevcut URL'i parçala
+            const url = new URL(link.href);
+            
+            // Müzik pozisyonunu URL parametresi olarak ekle
+            url.searchParams.set('muzikPos', position);
+            
+            // Linki güncelle
+            link.href = url.toString();
+        }
+    });
+}
 
 // Müziği aç/kapat fonksiyonu
 function toggleMusic() {
@@ -168,3 +206,14 @@ function toggleMusic() {
         localStorage.setItem('isMusicPlaying', isMusicPlaying);
     }
 }
+
+// Sayfa yüklendiğinde tüm linklere müzik pozisyonu ekle
+document.addEventListener('DOMContentLoaded', function() {
+    // Son bilinen müzik pozisyonunu al
+    const lastPosition = parseFloat(localStorage.getItem('lastMusicPosition') || '0');
+    
+    // Eğer pozisyon varsa, tüm linklere ekle
+    if (lastPosition > 0) {
+        addMusicPositionToLinks(lastPosition);
+    }
+});
